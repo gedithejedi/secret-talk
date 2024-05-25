@@ -1,6 +1,11 @@
+import { Web3ModalProvider } from "@/components/Web3ModalProvider";
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 
 export default function App({ Component, pageProps }: AppProps) {
-  return <Component {...pageProps} />;
+  return (
+    <Web3ModalProvider>
+      <Component {...pageProps} />
+    </Web3ModalProvider>
+  );
 }
