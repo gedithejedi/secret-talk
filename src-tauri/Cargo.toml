@@ -19,6 +19,21 @@ serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 tauri = { version = "1.6.5", features = ["api-all"] }
 
+portaudio = "0.7.0"
+aes-gcm = "0.10.0"
+rand = "0.8.4"
+clap = { version = "4.0.0", features = ["derive"] }
+bytemuck = "1.7.2"
+secp256k1 = { version = "0.22", features = ["rand-std"] }
+hex = "0.4.3"
+cpal = "0.15.3"
+anyhow = "1.0.86"
+coreaudio-rs = "0.12"
+tokio = { version = "1.37.0", features = ["full"] }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+coreaudio-rs = { version = "0.11", default-features = false, features = ["audio_unit", "core_audio"] }
+
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.
 # If you use cargo directly instead of tauri's cli you can use this feature flag to switch between tauri's `dev` and `build` modes.
