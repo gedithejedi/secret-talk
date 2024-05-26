@@ -33,6 +33,7 @@ export default function Home() {
   const [burnerAccount, setBurnerAccount] = useState<MyBurnerAccount>(defaultBurnerAccount);
   const [recipientAddress, setRecipientAddress] = useState<string>("" as `0x${string}`);
   const [hasConnected, setHasConnected] = useState<boolean>(false);
+  const [action, setAction] = useState<"sender" | "receiver">("sender");
 
   // const verifyMessage = async (signature: `0x${string}`) => {
   //   if (!address) return false;
@@ -54,10 +55,11 @@ export default function Home() {
       const blockNumber = Number(await publicClient.getBlockNumber() || 0);
       // const res = await signMessage(config, { message: `${recipientAddress}-${blockNumber}` });
 
-      // const { appWindow } = await import("@tauri-apps/api/window");
-      // await invoke("start", {
-      //   window: appWindow,
-      // });
+      const { appWindow } = await import("@tauri-apps/api/window");
+      await invoke("start", {
+        window: appWindow,
+        emission: action === "receiver" ? false : true,
+      });
 
       console.log(`${recipientAddress}-${blockNumber}`);
       setHasConnected(true)
@@ -75,10 +77,10 @@ export default function Home() {
     try {
       setIsSigning(true);
 
-      // const { appWindow } = await import("@tauri-apps/api/window");
-      // await invoke("stop", {
-      //   window: appWindow,
-      // });
+      const { appWindow } = await import("@tauri-apps/api/window");
+      await invoke("stop", {
+        window: appWindow,
+      });
 
       setTimeout(() => {
         setHasConnected(false);
@@ -92,10 +94,11 @@ export default function Home() {
     }
   }
 
+  console.log(action);
   return (
     <div className="bg-[#1e2229] min-h-screen flex items-center flex-col justify-center w-full">
       <div className="w-full flex justify-end fixed top-0 left-0 p-4">
-        {hasConnected ? <div className="w-full flex justify-end">
+        {hasConnected ? <div className="w-full flex justify-between">
           <div className="flex gap-1 justify-center items-center bg-green-500 px-2 rounded-full w-auto">
             <div className="bg-green-800 rounded-full h-2 w-2" />Secure network established
           </div>
@@ -153,6 +156,18 @@ export default function Home() {
             />
           </div>
         )}
+
+        <fieldset className="flex gap-4" onChange={(e) => setAction((e.target as HTMLInputElement).value as any)}>
+          <div>
+            <input type="radio" id="sender" name="action" value="sender" />
+            <label className="ml-1" htmlFor="sender">Sender</label>
+          </div>
+
+          <div>
+            <input type="radio" id="receiver" name="action" value="receiver" />
+            <label className="ml-1" htmlFor="receiver">Receiver</label>
+          </div>
+        </fieldset>
       </div>
       {/* {!busy && (
         <button
