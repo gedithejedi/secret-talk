@@ -2,11 +2,12 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { useAccount } from "wagmi";
 import Button from "@/components/Button";
 import { config, publicClient } from "@/components/Web3ModalProvider";
-import { signMessage } from '@wagmi/core'
 import { useEffect, useState } from "react";
 import GenerateBurnerWallet, { defaultBurnerAccount } from "@/components/GenerateBurner";
 import RecipientAddress from "@/components/RecipientAddress";
 import { isAddress } from "viem";
+import Image from "next/image";
+import { copyToClipboard } from "@/utils/copy";
 
 // interface ProgressEventPayload {
 //   progress: number;
@@ -15,8 +16,6 @@ import { isAddress } from "viem";
 // interface ProgressEventProps {
 //   payload: ProgressEventPayload;
 // }
-
-// 0xa21d43d56f6b0790a8c44dd8bb71835650eedd5e
 
 interface ConnectedToAccount {
   publicAddress: string;
@@ -27,13 +26,9 @@ interface ConnectedToAccount {
 export interface MyBurnerAccount {
   publicAddress: string;
   privateKey: string;
-  // blockNumber: number;
 }
 
 export default function Home() {
-  // const { address, isConnected, isDisconnected } = useAccount()
-  const isConnected = true;
-  const isDisconnected = false;
   const [isSigning, setIsSigning] = useState<boolean>(false);
   const [burnerAccount, setBurnerAccount] = useState<MyBurnerAccount>(defaultBurnerAccount);
   const [recipientAddress, setRecipientAddress] = useState<string>("" as `0x${string}`);
@@ -59,20 +54,20 @@ export default function Home() {
       const blockNumber = Number(await publicClient.getBlockNumber() || 0);
       // const res = await signMessage(config, { message: `${recipientAddress}-${blockNumber}` });
 
-      const { appWindow } = await import("@tauri-apps/api/window");
-      await invoke("start", {
-        window: appWindow,
-      });
+      // const { appWindow } = await import("@tauri-apps/api/window");
+      // await invoke("start", {
+      //   window: appWindow,
+      // });
 
       console.log(`${recipientAddress}-${blockNumber}`);
-      setTimeout(() => {
-        setHasConnected(true)
-      }, 1000);
+      setHasConnected(true)
     } catch (e) {
       console.log(e);
       setBurnerAccount(defaultBurnerAccount);
     } finally {
-      setIsSigning(false);
+      setTimeout(() => {
+        setIsSigning(false);
+      }, 1000);
     }
   }
 
@@ -80,10 +75,10 @@ export default function Home() {
     try {
       setIsSigning(true);
 
-      const { appWindow } = await import("@tauri-apps/api/window");
-      await invoke("stop", {
-        window: appWindow,
-      });
+      // const { appWindow } = await import("@tauri-apps/api/window");
+      // await invoke("stop", {
+      //   window: appWindow,
+      // });
 
       setTimeout(() => {
         setHasConnected(false);
@@ -91,43 +86,52 @@ export default function Home() {
     } catch (e) {
       console.log(e);
     } finally {
-      setIsSigning(false);
+      setTimeout(() => {
+        setIsSigning(false);
+      }, 1000);
     }
   }
 
-  useEffect(() => {
-    if (isDisconnected && isSigning) setIsSigning(false);
-    if (isDisconnected && burnerAccount.publicAddress) setBurnerAccount(defaultBurnerAccount);
-  }, [isConnected, isDisconnected, isSigning]);
-  console.log(hasConnected);
   return (
-    <div className="bg-slate-800 min-h-screen	pb-9">
-      <div className="flex justify-end px-2 pt-2">
-        <w3m-button />
+    <div className="bg-[#1e2229] min-h-screen flex items-center flex-col justify-center w-full">
+      <div className="w-full flex justify-end fixed top-0 left-0 p-4">
+        {hasConnected ? <div className="w-full flex justify-end">
+          <div className="flex gap-1 justify-center items-center bg-green-500 px-2 rounded-full w-auto">
+            <div className="bg-green-800 rounded-full h-2 w-2" />Secure network established
+          </div>
+        </div> :
+          <div className="w-full flex justify-end">
+            <div className="flex gap-1 justify-center items-center bg-red-500 px-2 rounded-full w-auto">
+              <div className="bg-red-800 rounded-full h-2 w-2" />Unsecure network
+            </div>
+          </div>
+        }
       </div>
 
       <div className="p-3 flex flex-col justify-center items-center">
-        <div className="text-center text-2xl text-white mt-4 mb-4">Welcome to Secret Talk</div>
-        {isConnected ? (
-          <GenerateBurnerWallet
-            setIsSigning={setIsSigning}
-            setBurnerAccount={setBurnerAccount}
-            burnerAccount={burnerAccount}
-            isSigning={isSigning}
-          />
-        ) :
-          <p>You are logged out. Please log in to use the app.</p>}
+        <GenerateBurnerWallet
+          setIsSigning={setIsSigning}
+          setBurnerAccount={setBurnerAccount}
+          burnerAccount={burnerAccount}
+          isSigning={isSigning}
+        />
 
         {burnerAccount.publicAddress && (
-          <div className="flex flex-col justify-start w-full bg-slate-700 p-5 mt-10 max-w-[500px] rounded-md">
-            {hasConnected && <div className="w-full flex justify-end">
-              <div className="flex gap-1 justify-center items-center bg-green-500 p-1 rounded-full w-32">
-                <div className="bg-green-800 rounded-full h-2 w-2" />Connected
+          <div className="flex flex-col justify-start w-full p-5 mt-8 min-w-[530px] max-w-[550px] rounded-md">
+            <div className="flex justify-center">
+              <Image height={60} width={60} src="secure.svg" alt="logo" />
+            </div>
+            <div className="text-center text-2xl text-white mt-4 mb-2">Welcome to Secret Talk</div>
+            <p className="max-w-[550px] mb-6">
+              Establish a fully encrypted connection to another ETH address. Use this on any voice or video call application and only the recipient will be able to hear you!
+            </p>
+
+            <div className="flex flex-col text-white mt-4">
+              <label className="mb-1" htmlFor="privateKey">My address</label>
+              <div className="flex bg-slate-500 rounded p-[8px]">
+                <input id="privateKey" type="text" className="bg-transparent w-full" value={burnerAccount.publicAddress} readOnly />
+                <Image className="cursor-pointer" height={20} width={20} src="/copy.svg" alt="copy" onClick={() => copyToClipboard(burnerAccount.publicAddress)} />
               </div>
-            </div>}
-            <div className="flex flex-col text-white mt-4 mb-2">
-              <label className="mb-1" htmlFor="privateKey">My public Address:</label>
-              <input id="privateKey" type="text" className="bg-slate-600 rounded p-1 w-full" value={burnerAccount.publicAddress} readOnly />
             </div>
             {/* <div className="flex flex-col text-white mt-4 mb-2">
               <label className="mb-1" htmlFor="privateKey">Private Key:</label>
@@ -145,6 +149,7 @@ export default function Home() {
               recipientAddress={recipientAddress}
               connectToAddress={!hasConnected ? connectToAddress : terminateConnection}
               isLoading={isSigning}
+              hasConnected={hasConnected}
             />
           </div>
         )}

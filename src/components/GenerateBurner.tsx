@@ -3,6 +3,7 @@ import Button from "./Button";
 import LoadingIcon from "./Loading";
 import { publicClient } from "@/components/Web3ModalProvider";
 import Wallet from "ethereumjs-wallet"
+import { useEffect, useMemo } from "react";
 
 export const defaultBurnerAccount = {
   publicAddress: "",
@@ -19,7 +20,7 @@ interface GenerateBurnerWalletProps {
 const GenerateBurnerWallet = ({ setIsSigning, setBurnerAccount, isSigning, burnerAccount }: GenerateBurnerWalletProps) => {
   const generateWalletButtonText = burnerAccount.publicAddress ? "Generate another address" : "Generate an address";
 
-  const generateBurner = async () => {
+  const generateBurner = useMemo(() => async () => {
     setIsSigning(true);
     const wallet = Wallet.generate();
     const publicAddress = `0x${wallet.getAddress().toString('hex')}`;
@@ -39,15 +40,18 @@ const GenerateBurnerWallet = ({ setIsSigning, setBurnerAccount, isSigning, burne
     } finally {
       setIsSigning(false);
     }
-  }
+  }, [setBurnerAccount, setIsSigning])
 
+
+  useEffect(() => {
+    if (!burnerAccount.publicAddress) generateBurner();
+  }, [burnerAccount, generateBurner])
 
   return (
     <div className="max-w-96" >
-      <Button isLoading={isSigning} onClick={generateBurner}>
-        {isSigning && <LoadingIcon />}
-        <p className="ml-1">{isSigning ? "Generating address.." : generateWalletButtonText}</p>
-      </Button>
+      {/* <Button isLoading={isSigning} onClick={generateBurner}>
+        <p className="ml-1">{isSigning ? "Please wait.." : generateWalletButtonText}</p>
+      </Button> */}
     </div >
   )
 }

@@ -24,7 +24,7 @@ fn main() {
     tauri::Builder::default()
         .manage(State {
             stop_signal: Arc::new(Mutex::new(false)),
-            emission: true,
+            emission: false,
         })
         .invoke_handler(tauri::generate_handler![start, stop])
         .run(tauri::generate_context!())

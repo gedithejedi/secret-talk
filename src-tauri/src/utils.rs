@@ -34,6 +34,8 @@ pub fn decrypt(shared_secret: SharedSecret, data: &[u8]) -> Vec<u8> {
 
   let cipher = Aes128Gcm::new(key);
 
+  println!("Decrypting data: {:?}", data.len());
+
   cipher.decrypt(nonce, data).unwrap()
 }
 
