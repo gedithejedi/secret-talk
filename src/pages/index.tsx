@@ -31,7 +31,9 @@ export interface MyBurnerAccount {
 }
 
 export default function Home() {
-  const { address, isConnected, isDisconnected } = useAccount()
+  // const { address, isConnected, isDisconnected } = useAccount()
+  const isConnected = true;
+  const isDisconnected = false;
   const [isSigning, setIsSigning] = useState<boolean>(false);
   const [burnerAccount, setBurnerAccount] = useState<MyBurnerAccount>(defaultBurnerAccount);
   const [recipientAddress, setRecipientAddress] = useState<string>("" as `0x${string}`);
