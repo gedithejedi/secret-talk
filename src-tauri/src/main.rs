@@ -61,8 +61,7 @@ fn start(state: tauri::State<'_, State>) {
                         y == BLACKHOLE
                     })
                     .unwrap_or(false)
-            });
-            host.default_output_device()
+            })
         } else {
             host.default_output_device()
         }
