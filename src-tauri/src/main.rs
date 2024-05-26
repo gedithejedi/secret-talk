@@ -6,7 +6,7 @@ use cpal::{
     traits::{DeviceTrait, HostTrait, StreamTrait},
     Device, Stream, StreamConfig,
 };
-use secp256k1::ecdh::SharedSecret;
+use secp256k1::{ecdh::SharedSecret, PublicKey, SecretKey};
 use std::{
     sync::{Arc, Mutex},
     thread,
@@ -77,7 +77,11 @@ fn start(state: tauri::State<'_, State>) {
         let input_buffer = Arc::clone(&shared_buffer);
         let output_buffer = Arc::clone(&shared_buffer);
 
-        let ((sk1, _), (_, pk2)) = generate_ethereum_accounts();
+        let skb: Vec<u8> = vec![149, 213, 23, 72, 35, 51, 30, 42, 216, 252, 168, 168, 131, 190, 239, 52, 152, 134, 21, 171, 139, 28, 167, 119, 53, 144, 122, 230, 200, 167, 3, 150];
+        let pkb: Vec<u8> = vec![4, 125, 245, 230, 209, 154, 228, 64, 128, 102, 154, 182, 127, 50, 189, 65, 249, 236, 45, 105, 23, 225, 252, 180, 163, 113, 154, 69, 206, 14, 26, 136, 83, 238, 211, 31, 195, 93, 178, 137, 77, 78, 208, 205, 29, 80, 110, 221, 240, 29, 68, 229, 92, 194, 47, 104, 119, 97, 50, 188, 215, 210, 227, 69, 57];
+        let sk1 = SecretKey::from_slice(&skb).unwrap();
+        let pk2 = PublicKey::from_slice(&pkb).unwrap();
+        
         let shared_secret = generate_shared_secret(pk2, sk1);
 
         let (input_stream, output_stream) = if emission {
