@@ -98,7 +98,7 @@ export default function Home() {
   return (
     <div className="bg-[#1e2229] min-h-screen flex items-center flex-col justify-center w-full">
       <div className="w-full flex justify-end fixed top-0 left-0 p-4">
-        {hasConnected ? <div className="w-full flex justify-between">
+        {hasConnected ? <div className="w-full flex justify-end">
           <div className="flex gap-1 justify-center items-center bg-green-500 px-2 rounded-full w-auto">
             <div className="bg-green-800 rounded-full h-2 w-2" />Secure network established
           </div>

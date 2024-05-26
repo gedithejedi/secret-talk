@@ -1,8 +1,4 @@
-import { MyBurnerAccount } from "@/pages";
 import Button from "./Button";
-import LoadingIcon from "./Loading";
-import { publicClient } from "@/components/Web3ModalProvider";
-import Wallet from "ethereumjs-wallet"
 import { isAddress } from "viem";
 
 interface RecipientAddressProps {
