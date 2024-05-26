@@ -37,6 +37,7 @@ const BLACKHOLE: &str = "BlackHole 2ch";
 fn start(state: tauri::State<'_, State>) {
     let stop_signal = state.stop_signal.clone();
     *stop_signal.lock().unwrap() = false; // Reset stop signal
+    println!("START! ");
 
     let emission = state.emission;
 
@@ -129,6 +130,7 @@ fn start(state: tauri::State<'_, State>) {
 #[tauri::command]
 fn stop(state: tauri::State<'_, State>) {
     let mut stop = state.stop_signal.lock().unwrap();
+    println!("STOP! ");
     *stop = true;
 }
 
